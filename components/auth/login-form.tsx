@@ -16,6 +16,9 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { FormError } from "../form-error";
 import { FormSuccess } from "../form-success";
+import { login } from "@/action/login";
+// https://react.dev/reference/react/useTransition
+import { useState, useTransition } from "react";
 
 export const LoginForm = () => {
   const form = useForm<z.infer<typeof LoginSchema>>({
@@ -25,9 +28,16 @@ export const LoginForm = () => {
       password: "",
     },
   });
-
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | undefined>("");
+  const [success, setSuccess] = useState<string | undefined>("");
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
-    console.log(values);
+    startTransition(() => {
+      login(values).then((data) => {
+        setError(data.error);
+        setSuccess(data.success);
+      });
+    });
   };
   return (
     <CardWrapper
@@ -48,6 +58,7 @@ export const LoginForm = () => {
                   <FormControl>
                     <Input
                       {...field}
+                      disabled={isPending}
                       placeholder="john.doe@example.com"
                       type="email"
                     ></Input>
@@ -65,6 +76,7 @@ export const LoginForm = () => {
                   <FormControl>
                     <Input
                       {...field}
+                      disabled={isPending}
                       placeholder="******"
                       type="password"
                     ></Input>
@@ -74,9 +86,10 @@ export const LoginForm = () => {
               )}
             ></FormField>
           </div>
-          <FormSuccess message="" />
-          <FormError message="" />
-          <Button type="submit" className="w-full">
+          <FormError message={error} />
+          <FormSuccess message={success} />
+
+          <Button type="submit" className="w-full" disabled={isPending}>
             Login
           </Button>
         </form>
