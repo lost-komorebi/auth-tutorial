@@ -18,17 +18,22 @@ export default auth((req) => {
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
+  // never protect ApiAuthRoutes
   if (isApiAuthRoute) {
     return null;
   }
+
   if (isAuthRoute) {
+    // always redirect logged in user to DEFAULT_LOGIN_REDIRECT page
     if (isLoggedIn) {
       return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
     }
     return null;
   }
+
+  // not logged user access not public routes will redirect to login page
   if (!isLoggedIn && !isPublicRoute) {
-    return Response.redirect(new URL("auth/login", nextUrl));
+    return Response.redirect(new URL("/auth/login", nextUrl));
   }
 
   return null;
