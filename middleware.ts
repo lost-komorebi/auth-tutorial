@@ -11,6 +11,7 @@ const { auth } = NextAuth(authConfig);
 
 // every time when the path matches the matchers, this `auth` will get invoked
 export default auth((req) => {
+  // Destructuring  nextUrl from req
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
 
@@ -20,7 +21,7 @@ export default auth((req) => {
 
   // never protect ApiAuthRoutes
   if (isApiAuthRoute) {
-    return null;
+    return;
   }
 
   if (isAuthRoute) {
@@ -28,7 +29,7 @@ export default auth((req) => {
     if (isLoggedIn) {
       return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
     }
-    return null;
+    return;
   }
 
   // not logged user access not public routes will redirect to login page
@@ -36,7 +37,7 @@ export default auth((req) => {
     return Response.redirect(new URL("/auth/login", nextUrl));
   }
 
-  return null;
+  return;
 });
 
 // Optionally, don't invoke Middleware on some paths
