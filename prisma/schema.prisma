@@ -16,6 +16,11 @@ datasource db {
   // directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
+enum UserRole {
+  Admin
+  User
+}
+
 // https://authjs.dev/getting-started/adapters/prisma
 model User {
   id            String    @id @default(cuid())
@@ -23,6 +28,7 @@ model User {
   email         String    @unique
   emailVerified DateTime?
   image         String?
+  role          UserRole  @default(User)
   password      String?
   accounts      Account[]
 }
